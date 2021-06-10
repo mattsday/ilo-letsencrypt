@@ -14,7 +14,7 @@
 
 # Check existing cert
 if [ -f "${OUTPUT_FULL_CHAIN}" ]; then
-    if sudo openssl x509 -checkend "${EXPIRY_THRESHOLD}" -noout -in "${OUTPUT_FULL_CHAIN}" >/dev/null 2>&1; then
+    if openssl x509 -checkend "${EXPIRY_THRESHOLD}" -noout -in "${OUTPUT_FULL_CHAIN}" >/dev/null 2>&1; then
         echo Cert not expiring
         exit 0
     fi
@@ -22,7 +22,7 @@ fi
 
 echo Cert will expire or does not exist
 
-if ! sudo certbot certonly -n --agree-tos --email ${LE_EMAIL} \
+if ! certbot certonly -n --agree-tos --email ${LE_EMAIL} \
     --dns-google-propagation-seconds ${GCP_DNS_WAIT} \
     --dns-google --dns-google-credentials ${GCP_CREDENTIALS_FILE} \
     --cert-name "${CERT_NAME}" \
