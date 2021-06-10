@@ -4,4 +4,4 @@ RUN pip3 install python-hpilo
 COPY ilo.sh /ilo.sh
 COPY cert.csr /cert.csr 
 COPY sa.json /sa.json
-
+COPY password.sh /password.sh
