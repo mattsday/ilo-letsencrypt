@@ -31,3 +31,5 @@ if ! sudo certbot certonly -n --agree-tos --email ${LE_EMAIL} \
     echo Error getting certificate
     exit 1
 fi
+
+# Certificate has been generated, do something with it!
