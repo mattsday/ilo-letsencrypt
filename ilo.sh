@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /password.sh
+
 [ -z "${DOMAINS}" ] && DOMAINS="trillian-ilo.fragilegeek.com"
 [ -z "${LE_EMAIL}" ] && LE_EMAIL="mattsday@gmail.com"
 [ -z "${CERT_NAME}" ] && CERT_NAME=trillian-ilo
@@ -8,9 +10,10 @@
 [ -z "${OUTPUT_SECRET}" ] && OUTPUT_SECRET=/etc/letsencrypt/live/"${CERT_NAME}"/privkey.pem
 [ -z "${GCP_DNS_WAIT}" ] && GCP_DNS_WAIT=120
 [ -z "${GCP_CREDENTIALS_FILE}" ] && GCP_CREDENTIALS_FILE="/sa.json"
+[ -z "${CSR}" ] && CSR="/cert.csr"
 
 # Generate CSR request (already done)
-#hpilo_cli -l Administrator -p 72TDGQ8T 10.86.0.12 certificate_signing_request country= state= locality= organization= organizational_unit= common_name=trillian-ilo.fragilegeek.com
+#hpilo_cli -l Administrator -p "${PASSWORD}" 10.86.0.12 certificate_signing_request country= state= locality= organization= organizational_unit= common_name=trillian-ilo.fragilegeek.com
 
 # Check existing cert
 if [ -f "${OUTPUT_FULL_CHAIN}" ]; then
@@ -26,10 +29,11 @@ if ! certbot certonly -n --agree-tos --email ${LE_EMAIL} \
     --dns-google-propagation-seconds ${GCP_DNS_WAIT} \
     --dns-google --dns-google-credentials ${GCP_CREDENTIALS_FILE} \
     --cert-name "${CERT_NAME}" \
-    -d "${DOMAINS}" \
+    --csr "${CSR}" \
     --cert-path ./; then
     echo Error getting certificate
     exit 1
 fi
 
 # Certificate has been generated, do something with it!
+hpilo_cli -l Administrator -p "${PASSWORD}" 10.86.0.12 import_certificate certificate="$(cat $OUTPUT_FULL_CHAIN)"
